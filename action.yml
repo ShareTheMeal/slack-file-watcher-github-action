@@ -1,0 +1,26 @@
+name: 'Slack File Watcher'
+description: 'Notifies slack when a file has been changed'
+inputs:
+  file:
+    description: 'The file that should be watched'
+    required: true
+  slack-channel:
+    description: 'Slack channel that should be notified'
+    required: true
+  slack-title:
+    description : 'Title of the message that is sent to slack'
+    required: false
+    default: 'Additions to: " + {fileToWatch}'
+  slack-webhook:
+    description: 'Slack webhook'
+    required: true
+  github-token:
+    description: 'GitHub token for GitHub API requests. Users should not need to set this themselves.'
+    required: true
+    default: ${{ github.token }}
+outputs:
+  didNotify:
+    description: 'Shows if the file has been changed and the channel notified'
+runs:
+  using: 'node12'
+  main: 'dist/index.js'
