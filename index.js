@@ -31,8 +31,7 @@ async function run() {
                 mediaType: {format: "diff"}
             });
             const files = parse(diff)
-            files.filter(file => file.to === fileToWatch)
-                .forEach(function(file) {
+            files.forEach((file) => {
                     console.log("file" + file.to);
                     const adds = file.chunks.map(
                         chunk => chunk.changes
