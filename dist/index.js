@@ -11593,7 +11593,8 @@ const parse = __nccwpck_require__(2347);
 function getAdditions(diff, fileToWatch) {
     const files = parse(diff)
     const additions = [];
-    files.filter(file => file.to.toLowerCase() === fileToWatch.toLowerCase())
+    files.forEach(file => console.log(file.to))
+        .filter(file => file.to.toLowerCase() === fileToWatch.toLowerCase())
         .forEach((file) => {
             file.chunks.forEach(chunk => {
                 chunk.changes.filter(change => change.type === 'add')
@@ -11627,27 +11628,36 @@ async function notifySlack(slackChannel, slackWebhook, title, text) {
 }
 
 function getInputs() {
-    const fileToWatch = core.getInput('file');
-    const slackChannel = core.getInput('slack-channel');
-    const slackWebhook = core.getInput('slack-webhook');
-    const githubToken = core.getInput('github-token');
+    const fileToWatch = core.getInput('file', {required: true});
+    const slackTitle = core.getInput('slack-title', {required: false})
+    const slackChannel = core.getInput('slack-channel', {required: true});
+    const slackWebhook = core.getInput('slack-webhook',{required: true});
+    const githubToken = core.getInput('github-token', {required: true});
     const eventName = github.context.eventName;
-    return {fileToWatch, slackChannel, slackWebhook, githubToken, eventName};
+    return { fileToWatch ,slackTitle, slackChannel, slackWebhook, githubToken, eventName };
+}
+
+function getTitle(slackTitle, fileToWatch) {
+    if (slackTitle) {
+        return slackTitle
+    } else {
+        return "Additions to: " + fileToWatch;
+    }
 }
 
 async function run() {
     try {
-        const {fileToWatch, slackChannel, slackWebhook, githubToken, eventName} = getInputs();
+        const { fileToWatch, slackTitle, slackChannel, slackWebhook, githubToken, eventName} = getInputs();
         let didNotify;
         if (eventName === 'pull_request') {
             const diff = await getPRDiff(githubToken);
             const additions = getAdditions(diff, fileToWatch);
             if (additions.length == 0) {
-                console.log("Not additions to the file found");
+                console.log("No additions found");
                 didNotify = false
             } else {
                 console.log("Found " + additions.length + ". Notifying channel: " + slackChannel);
-                const title = "Additions to: " + fileToWatch;
+                let title = getTitle(slackTitle, fileToWatch);
                 const text = additions.join('\r\n');
                 await notifySlack(slackChannel, slackWebhook, title, text);
                 didNotify = true

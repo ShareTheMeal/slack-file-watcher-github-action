@@ -7,6 +7,10 @@ inputs:
   slack-channel:
     description: 'Slack channel that should be notified'
     required: true
+  slack-title:
+    description : 'Title of the message that is sent to slack'
+    required: false
+    default: 'Additions to: " + {fileToWatch}'
   slack-webhook:
     description: 'Slack webhook'
     required: true
