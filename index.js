@@ -27,7 +27,7 @@ async function run() {
                 repo: github.context.repo.repo,
                 owner: github.context.repo.owner,
                 pull_number: github.context.payload.pull_request.number,
-                mediaType: {format: "patch"}
+                mediaType: {format: "diff"}
             });
             console.log(diff);
             await webhook.send({
