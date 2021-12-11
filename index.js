@@ -31,11 +31,12 @@ async function run() {
                 mediaType: {format: "diff"}
             });
             const files = parse(diff)
-            files.forEach((file) => {
+            files.filter(file => file.to.toLowerCase() === fileToWatch.toLowerCase())
+                .forEach((file) => {
                     console.log("file" + file.to);
-                    const adds = file.chunks.map(
-                        chunk => chunk.changes
-                            .filter(chunk => chunk.type === 'add'));
+                    const adds = file.chunks.map(chunk => {
+                        chunk.changes.filter(chunk => chunk.type === 'add')
+                    });
                     console.log(adds);
             });
             await webhook.send({
