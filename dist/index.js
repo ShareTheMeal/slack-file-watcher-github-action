@@ -11604,7 +11604,7 @@ async function run() {
         console.log(`Github token: ${githubToken}`)
         const webhook = new IncomingWebhook(slackWebhook, {
             channel: slackChannel,
-            username: "New Keys In Use"
+            username: "Additions to:" + fileToWatch
         });
         const eventName = github.context.eventName;
         let didNotify;
@@ -11617,16 +11617,19 @@ async function run() {
                 mediaType: {format: "diff"}
             });
             const files = parse(diff)
+            const additions = [];
             files.filter(file => file.to.toLowerCase() === fileToWatch.toLowerCase())
                 .forEach((file) => {
-                    console.log("file" + file.to);
-                    const adds = file.chunks.map(chunk => {
-                        chunk.changes.filter(chunk => chunk.type === 'add')
-                    });
-                    console.log(adds);
+                    file.chunks.forEach(chunk => {
+                        chunk.changes.filter(change => change.type === 'add')
+                            .forEach(change => {
+                                additions.push(change.content);
+                            })
+                    })
             });
             await webhook.send({
-                text: 'File: ' + fileToWatch + 'has changed',
+                text: additions.join('\r\n'),
+
             });
             didNotify = true
         } else {
