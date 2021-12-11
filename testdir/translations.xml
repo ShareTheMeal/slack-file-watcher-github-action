@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="settings_data_management_braze_text"  translatable="false">settings.data.management.braze.text</string>
-    <string name="asdfasdfsdf"  translatable="false">asdfsdf</string>
+    <string name="test1"  translatable="false">key1</string>
+    <string name="test2"  translatable="false">key2</string>
+    <string name="test3"  translatable="false">key3</string>
 </resources>
