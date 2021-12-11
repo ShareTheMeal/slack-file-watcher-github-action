@@ -11626,7 +11626,7 @@ async function run() {
                     console.log(adds);
             });
             await webhook.send({
-                text: 'File: ' + file + 'has changed',
+                text: 'File: ' + fileToWatch + 'has changed',
             });
             didNotify = true
         } else {
