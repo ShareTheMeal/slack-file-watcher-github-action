@@ -11616,29 +11616,35 @@ async function getPRDiff(githubToken) {
     return diff;
 }
 
-async function notifySlack(slackChannel, slackWebhook, additions) {
+async function notifySlack(slackChannel, slackWebhook, title, text) {
     const webhook = new IncomingWebhook(slackWebhook, {
         channel: slackChannel,
-        username: "Additions to:" + fileToWatch
+        username: title
     });
     await webhook.send({
-        text: additions.join('\r\n'),
-
+        text: text,
     });
+}
+
+function getInputs() {
+    const fileToWatch = core.getInput('file');
+    const slackChannel = core.getInput('slack-channel');
+    const slackWebhook = core.getInput('slack-webhook');
+    const githubToken = core.getInput('github-token');
+    const eventName = github.context.eventName;
+    return {fileToWatch, slackChannel, slackWebhook, githubToken, eventName};
 }
 
 async function run() {
     try {
-        const fileToWatch = core.getInput('file');
-        const slackChannel = core.getInput('slack-channel');
-        const slackWebhook = core.getInput('slack-webhook');
-        const githubToken = core.getInput('github-token');
-        const eventName = github.context.eventName;
+        const {fileToWatch, slackChannel, slackWebhook, githubToken, eventName} = getInputs();
         let didNotify;
         if (eventName === 'pull_request') {
             const diff = await getPRDiff(githubToken);
             const additions = getAdditions(diff, fileToWatch);
-            await notifySlack(slackChannel, slackWebhook, additions);
+            const title = "Additions to: " + fileToWatch;
+            const text = additions.join('\r\n');
+            await notifySlack(slackChannel, slackWebhook, title, text);
             didNotify = true
         } else {
             didNotify = false
