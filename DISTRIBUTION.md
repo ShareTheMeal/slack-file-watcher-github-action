@@ -1,3 +1,4 @@
 ## To create a new version
-- Install compile tool: [@vercel/ncc](https://github.com/vercel/ncc)
-- Compile: `ncc build index.js --license licenses.txt`
+- Install compile tool: `npm i -g @vercel/ncc`  [@vercel/ncc](https://github.com/vercel/ncc)
+- Package: `npm run package`
+- 
