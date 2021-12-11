@@ -56,10 +56,16 @@ async function run() {
         if (eventName === 'pull_request') {
             const diff = await getPRDiff(githubToken);
             const additions = getAdditions(diff, fileToWatch);
-            const title = "Additions to: " + fileToWatch;
-            const text = additions.join('\r\n');
-            await notifySlack(slackChannel, slackWebhook, title, text);
-            didNotify = true
+            if (additions.length == 0) {
+                console.log("Not additions to the file found");
+                didNotify = false
+            } else {
+                console.log("Found " + additions.length + ". Notifying channel: " + slackChannel);
+                const title = "Additions to: " + fileToWatch;
+                const text = additions.join('\r\n');
+                await notifySlack(slackChannel, slackWebhook, title, text);
+                didNotify = true
+            }
         } else {
             didNotify = false
         }
