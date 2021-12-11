@@ -11591,46 +11591,55 @@ const {GitHub} = __nccwpck_require__(4607);
 const util = __nccwpck_require__(3837)
 const parse = __nccwpck_require__(2347);
 
+function getAdditions(files, fileToWatch) {
+    const additions = [];
+    files.filter(file => file.to.toLowerCase() === fileToWatch.toLowerCase())
+        .forEach((file) => {
+            file.chunks.forEach(chunk => {
+                chunk.changes.filter(change => change.type === 'add')
+                    .forEach(change => {
+                        additions.push(change.content);
+                    })
+            })
+        });
+    return additions;
+}
+
+async function getPRDiff(octoKit) {
+    const {data: diff} = await octoKit.rest.pulls.get({
+        repo: github.context.repo.repo,
+        owner: github.context.repo.owner,
+        pull_number: github.context.payload.pull_request.number,
+        mediaType: {format: "diff"}
+    });
+    return diff;
+}
+
+async function notifySlack(slackChannel, additions) {
+    const webhook = new IncomingWebhook(slackWebhook, {
+        channel: slackChannel,
+        username: "Additions to:" + fileToWatch
+    });
+    await webhook.send({
+        text: additions.join('\r\n'),
+
+    });
+}
+
 async function run() {
     try {
         const fileToWatch = core.getInput('file');
         const slackChannel = core.getInput('slack-channel');
         const slackWebhook = core.getInput('slack-webhook');
         const githubToken = core.getInput('github-token');
-        const client = new GitHub(githubToken);
-        console.log(`File to watch: ${fileToWatch}`);
-        console.log(`Channel to notify: ${slackChannel}`)
-        console.log(`Webhook: ${slackWebhook}`)
-        console.log(`Github token: ${githubToken}`)
-        const webhook = new IncomingWebhook(slackWebhook, {
-            channel: slackChannel,
-            username: "Additions to:" + fileToWatch
-        });
         const eventName = github.context.eventName;
         let didNotify;
         if (eventName === 'pull_request') {
             const octoKit = github.getOctokit(githubToken)
-            const {data: diff} = await octoKit.rest.pulls.get({
-                repo: github.context.repo.repo,
-                owner: github.context.repo.owner,
-                pull_number: github.context.payload.pull_request.number,
-                mediaType: {format: "diff"}
-            });
+            const diff = await getPRDiff(octoKit);
             const files = parse(diff)
-            const additions = [];
-            files.filter(file => file.to.toLowerCase() === fileToWatch.toLowerCase())
-                .forEach((file) => {
-                    file.chunks.forEach(chunk => {
-                        chunk.changes.filter(change => change.type === 'add')
-                            .forEach(change => {
-                                additions.push(change.content);
-                            })
-                    })
-            });
-            await webhook.send({
-                text: additions.join('\r\n'),
-
-            });
+            const additions = getAdditions(files, fileToWatch);
+            await notifySlack(slackChannel, additions);
             didNotify = true
         } else {
             didNotify = false

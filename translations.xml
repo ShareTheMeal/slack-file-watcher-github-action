@@ -1,4 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="badge_year"  translatable="false">BADGE_YEAR</string>
+    <string name="settings_data_management_braze_text"  translatable="false">settings.data.management.braze.text</string>
 </resources>
