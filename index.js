@@ -7,8 +7,7 @@ const parse = require('parse-diff');
 function getAdditions(diff, fileToWatch) {
     const files = parse(diff)
     const additions = [];
-    files.forEach(file => console.log(file.to));
-    files.filter(file => file.to.toLowerCase() === fileToWatch.toLowerCase())
+    files.filter(file => file.to.includes(fileToWatch.toLowerCase()))
         .forEach((file) => {
             file.chunks.forEach(chunk => {
                 chunk.changes.filter(change => change.type === 'add')
