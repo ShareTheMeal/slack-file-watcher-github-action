@@ -18,6 +18,10 @@ inputs:
     description: 'GitHub token for GitHub API requests. Users should not need to set this themselves.'
     required: true
     default: ${{ github.token }}
+  include-pr-link:
+    description: 'Add the link to the PR along with the file changes'
+    required: false
+    default: false
 outputs:
   didNotify:
     description: 'Shows if the file has been changed and the channel notified'

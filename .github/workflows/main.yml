@@ -24,5 +24,6 @@ jobs:
           slack-webhook: ${{ secrets.SLACK_WEBHOOK }}
           slack-channel: '#action_test'
           github-token: ${{ github.token }}
+          include-pr-link: true
       - name: Get the output did notify
         run: echo "Notified slack ${{ steps.slack-notifier.outputs.didNotify }}"
