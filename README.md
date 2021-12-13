@@ -2,6 +2,10 @@
 
 Checks if the file provided has additions and sends them notification to a slack channel.
 
+## Status
+
+This action should be considered to be pre-production. Action configuration and behaviour may change without notice
+
 ## Usage
 
 See [action.yml](action.yml)
