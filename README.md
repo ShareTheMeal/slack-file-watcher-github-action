@@ -15,11 +15,12 @@ See [action.yml](action.yml)
         uses: actions/checkout@v2
       - name: Hello world action step
         id: slack-notifier
-        uses: ./
+        uses: ShareTheMeal/slack-file-watcher-github-action@0.1
         with:
           file: 'Translations.xml'
           slack-title: 'New Keys'
           slack-webhook: ${{ secrets.SLACK_WEBHOOK }}
           slack-channel: '#action_test'
           github-token: ${{ github.token }}
+          include-pr-link: true
 ```
