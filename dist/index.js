@@ -12803,8 +12803,10 @@ function getInputs () {
   const slackChannel = core.getInput('slack-channel', { required: true })
   const slackWebhook = core.getInput('slack-webhook', { required: true })
   const githubToken = core.getInput('github-token', { required: true })
+  const includePRLinkString = core.getInput('include-pr-link', { required: false })
+  const includePRLink = includePRLinkString === 'true'
   const eventName = github.context.eventName
-  return { fileToWatch, slackTitle, slackChannel, slackWebhook, githubToken, eventName }
+  return { fileToWatch, slackTitle, slackChannel, slackWebhook, githubToken, includePRLink, eventName }
 }
 
 function getTitle (slackTitle, fileToWatch) {
@@ -12817,7 +12819,7 @@ function getTitle (slackTitle, fileToWatch) {
 
 async function run () {
   try {
-    const { fileToWatch, slackTitle, slackChannel, slackWebhook, githubToken, eventName } = getInputs()
+    const { fileToWatch, slackTitle, slackChannel, slackWebhook, githubToken, includePRLink, eventName } = getInputs()
     let didNotify
     if (eventName === 'pull_request') {
       const diff = await getPRDiff(githubToken)
@@ -12828,7 +12830,10 @@ async function run () {
       } else {
         console.log('Found ' + additions.length + '. Notifying channel: ' + slackChannel)
         const title = getTitle(slackTitle, fileToWatch)
-        const text = additions.join('\r\n')
+        let text = additions.join('\r\n')
+        if (includePRLink) {
+          text += '\r\n \r\n' + github.context.payload.pull_request.html_url
+        }
         await notifySlack(slackChannel, slackWebhook, title, text)
         didNotify = true
       }
