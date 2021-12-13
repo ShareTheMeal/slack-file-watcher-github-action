@@ -1,8 +1,8 @@
 {
   "name": "slack-file-watcher-action",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "version": "0.1.0",
+  "description": "Github action that notifies a slack channel when a file has been changed",
+  "main": "dist/index.js",
   "scripts": {
     "package": "ncc build index.js --license licenses.txt",
     "lint": "eslint ./ --fix",
