@@ -24,3 +24,5 @@ See [action.yml](action.yml)
           github-token: ${{ github.token }}
           include-pr-link: true
 ```
+
+This action can be used on pull request or push triggers. Other events are ignored 
