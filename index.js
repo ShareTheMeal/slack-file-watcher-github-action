@@ -63,7 +63,7 @@ async function run () {
   try {
     const { fileToWatch, slackTitle, slackChannel, slackWebhook, githubToken, includePRLink, eventName } = getInputs()
     let didNotify
-    if (eventName === 'pull_request') {
+    if (eventName === 'pull_request' || eventName === 'push') {
       const diff = await getPRDiff(githubToken)
       const additions = getAdditions(diff, fileToWatch)
       if (additions.length === 0) {
